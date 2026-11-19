@@ -36,8 +36,8 @@ PROVIDER_OPENROUTER = "openrouter"
 
 # --- Blue Team (LOCKED) ---
 BLUE_PROVIDER = PROVIDER_OPENROUTER
-BLUE_MODEL = "liquid/lfm-3-1.7b:free"
-OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+BLUE_MODEL = "lfm3-1.7b"
+OPENROUTER_BASE_URL = "https://api.liquid.ai/openai/v1"
 DEFAULT_OPENROUTER_MODEL = BLUE_MODEL  # alias
 
 # --- Red Team ---
@@ -109,15 +109,19 @@ def get_blue_model() -> str:
 
 
 def get_openrouter_api_key() -> str:
-    return os.environ.get("OPENROUTER_API_KEY", "").strip()
+    return (
+        os.environ.get("LIQUID_API_KEY")
+        or os.environ.get("OPENROUTER_API_KEY", "")
+    ).strip()
 
 
 def blue_client_kwargs() -> dict:
-    """OpenAI SDK kwargs pointing at OpenRouter (Blue Team only)."""
+    """OpenAI SDK kwargs pointing at Liquid AI / OpenRouter (Blue Team only)."""
     return {
         "api_key": get_openrouter_api_key() or None,
         "base_url": (
-            os.environ.get("OPENROUTER_BASE_URL", OPENROUTER_BASE_URL).strip()
+            os.environ.get("LIQUID_BASE_URL")
+            or os.environ.get("OPENROUTER_BASE_URL", OPENROUTER_BASE_URL).strip()
             or OPENROUTER_BASE_URL
         ),
     }
